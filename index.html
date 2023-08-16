@@ -1,0 +1,92 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job List Editor</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <div class="main-box">
+        <div class="container">
+            <div class="left-section">
+                <h1>Job List Editor</h1>
+                <form action="/" method="post">
+                    <label for="jobs_file_path">Enter the path to .txt file:</label>
+                    <input type="text" id="jobs_file_path" name="jobs_file_path" required>
+                    <button type="submit">Load Jobs</button>
+                </form>
+
+                <div class="search-box">
+                    <input type="text" id="search_job" placeholder="Search job...">
+                    <button onclick="searchJobs()">Search</button>
+                </div>
+
+                {% if jobs %}
+                    <div class="job-list-container">
+                        <ul>
+                            {% for job in jobs %}
+                            <li>{{ job }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="right-section">
+                <h2>Add New Job</h2>
+                <form action="/add" method="post">
+                    <input type="text" id="new_job" name="new_job" required>
+                    <button type="submit">Add</button>
+                </form>
+
+                <h2>Update Job</h2>
+                <form action="/update" method="post">
+                    <select id="old_job" name="old_job">
+                        {% for job in jobs %}
+                        <option value="{{ job }}">{{ job }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" id="updated_job" name="updated_job" required>
+                    <button type="submit">Update</button>
+                </form>
+
+                <h2>Delete Job</h2>
+                <form action="/delete" method="post">
+                    <select id="deleted_job" name="deleted_job">
+                        {% for job in jobs %}
+                        <option value="{{ job }}">{{ job }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Redirect to login page if not authenticated -->
+    <script>
+        window.location.href = '/login';
+    </script>
+    {% endif %}
+
+    <script>
+        function searchJobs() {
+            var input, filter, ul, li, i, txtValue;
+            input = document.getElementById('search_job');
+            filter = input.value.toLowerCase();
+            ul = document.querySelector('.job-list-container ul');
+            li = ul.getElementsByTagName('li');
+
+            for (i = 0; i < li.length; i++) {
+                txtValue = li[i].textContent || li[i].innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    li[i].style.display = '';
+                } else {
+                    li[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
